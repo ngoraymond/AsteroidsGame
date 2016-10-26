@@ -11,7 +11,7 @@ public void setup()
   size(800,600);
   fill(0);
   bob = new SpaceShip();
-  phil= new Rock[6];
+  phil= new Rock[20];
   bill= new Bullet[20];
   castor = new Star[200];
   for(int i = 0;i<phil.length;i++)
@@ -35,8 +35,18 @@ public void draw()
     textSize(30);
     textAlign(CENTER, TOP);
     text("Asteroids",width/2,100);
-    textSize(15);
+    textSize(20);
     text("Press W to move forward",width/4,200);
+    text("Press S to move backward + slow down",width/4,230);
+    text("Press A to move left",width/4,260);
+    text("Press D to move right",width/4,290);
+    text("Mouse Click to fire",width/4,320);
+    text("Press Q to rotate left",3*width/4,200);
+    text("Press E to rotate right",3*width/4,230);
+    text("Press L to accelerate",3*width/4,260);
+    text("Press K to accelerate backwards",3*width/4,290);
+    text("Press P to teleport",3*width/4,320);
+
     noStroke();
     noFill();
   }
@@ -70,9 +80,11 @@ public void mouseClicked(){
     redraw();
   }
   if(SplashScreen==false){
+    bill[numBulletUsed].setPointDirection((int)(bob.getPointDirection()));
     bill[numBulletUsed].setY(bob.getY());
     bill[numBulletUsed].setX(bob.getX());
     bill[numBulletUsed].movely(10);
+
     numBulletUsed++;
      if(numBulletUsed==bill.length){numBulletUsed=0;}
   }
@@ -88,10 +100,20 @@ public void keyPressed(){
   }
   if(key == 'a'){
     bob.setDirectionX(-3);
+    /*
+    if(bob.getPointDirection()<-45 && bob.getPointDirection()>-135){bob.setDirectionX(-3);}
+    else if(bob.getPointDirection()>45 && bob.getPointDirection()<135){bob.setDirectionX(-3);}
+    else{bob.setDirectionY(-3);}
+    */
     
   }
   if(key == 'd'){
     bob.setDirectionX(3);
+    /*
+    if(bob.getPointDirection()<-45 && bob.getPointDirection()>-135){bob.setDirectionX(3);}
+    else if(bob.getPointDirection()>45 && bob.getPointDirection()<135){bob.setDirectionX(3);}
+    else{bob.setDirectionY(3);}
+    */
     
   }
   if(key == 'q'){
@@ -104,6 +126,17 @@ public void keyPressed(){
   }
   if(key == 'l'){
    bob.accelerate(1.2);
+  }
+  if(key == 'k'){
+     bob.accelerate(-0.3);
+  }
+  if(key == 'p'){
+     bob.setX((int)(Math.random()*width));
+     bob.setY((int)(Math.random()*height));
+     bob.accelerate(0);
+     bob.setDirectionX(0);
+     bob.setDirectionY(0);
+     bob.setPointDirection((int)(Math.random()*360));
   }
 
 }
@@ -162,11 +195,11 @@ class SpaceShip extends Floater
     xCorners = xShape;
     yCorners = yShape;
     myPointDirection=(int)(Math.random()*360);
-    myDirectionY=0.5;
-    myDirectionX=0;
+    myDirectionY=(int)(Math.random()*3)-1;
+    myDirectionX=(int)(Math.random()*3)-1;
     myCenterY=(int)(Math.random()*height);
     myCenterX=(int)(Math.random()*width);
-    myColor=color(255,0,0);
+    myColor=color(255,0,255,50);
 
   }
 }
