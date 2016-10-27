@@ -11,7 +11,7 @@ public void setup()
   size(800,600);
   fill(0);
   bob = new SpaceShip();
-  phil= new Rock[20];
+  phil= new Rock[10];
   bill= new Bullet[20];
   castor = new Star[200];
   for(int i = 0;i<phil.length;i++)
@@ -56,6 +56,7 @@ public void draw()
   {
     castor[i].show();
     castor[i].rotate(2);
+    castor[i].move();
   }
   for(int i = 0;i<bill.length;i++)
   {
@@ -94,26 +95,19 @@ public void keyPressed(){
   if(key == 'w'){
     //bob.setDirectionY(bob.getPointDirection());
     bob.movely(5);
+    //for(int i = 0; i<castor.length;i++){castor[i].setDirectionY(5);}
   }
   if(key == 's'){
     bob.movely(-5);
+    //for(int i = 0; i<castor.length;i++){castor[i].setDirectionY(-5);}
   }
   if(key == 'a'){
     bob.setDirectionX(-3);
-    /*
-    if(bob.getPointDirection()<-45 && bob.getPointDirection()>-135){bob.setDirectionX(-3);}
-    else if(bob.getPointDirection()>45 && bob.getPointDirection()<135){bob.setDirectionX(-3);}
-    else{bob.setDirectionY(-3);}
-    */
-    
+    //for(int i = 0; i<castor.length;i++){castor[i].setDirectionX(3);}
   }
   if(key == 'd'){
     bob.setDirectionX(3);
-    /*
-    if(bob.getPointDirection()<-45 && bob.getPointDirection()>-135){bob.setDirectionX(3);}
-    else if(bob.getPointDirection()>45 && bob.getPointDirection()<135){bob.setDirectionX(3);}
-    else{bob.setDirectionY(3);}
-    */
+    //for(int i = 0; i<castor.length;i++){castor[i].setDirectionX(-3);}
     
   }
   if(key == 'q'){
@@ -126,9 +120,21 @@ public void keyPressed(){
   }
   if(key == 'l'){
    bob.accelerate(1.2);
+   /*
+   for(int i = 0; i<castor.length;i++){
+    castor[i].setPointDirection((int)(bob.getPointDirection()));
+    castor[i].accelerate(1.2);
+    }
+    */
   }
   if(key == 'k'){
      bob.accelerate(-0.3);
+     /*
+     for(int i = 0; i<castor.length;i++){
+        castor[i].setPointDirection((int)(bob.getPointDirection()));
+        castor[i].accelerate(-0.3);
+       }
+      */
   }
   if(key == 'p'){
      bob.setX((int)(Math.random()*width));
@@ -187,6 +193,7 @@ class SpaceShip extends Floater
   public double getDirectionY(){return myDirectionY;}   
   public void setPointDirection(int degrees){myPointDirection=degrees;}   
   public double getPointDirection(){return myPointDirection;} 
+  private int rotateSpeed;
   public Rock()
    {
     corners=3;
@@ -200,8 +207,21 @@ class SpaceShip extends Floater
     myCenterY=(int)(Math.random()*height);
     myCenterX=(int)(Math.random()*width);
     myColor=color(255,0,255,50);
+    rotateSpeed=(int)(Math.random()*5)-2;
 
   }
+   public void move ()   //move the floater in the current direction of travel
+  {      
+    //change the x and y coordinates by myDirectionX and myDirectionY   
+    myPointDirection+=rotateSpeed;
+    myCenterX += myDirectionX;    
+    myCenterY += myDirectionY;     
+    //wrap around screen    
+    if(myCenterX >width){myCenterX = 0;}    
+    else if (myCenterX<0){myCenterX = width;}    
+    if(myCenterY >height){myCenterY = 0;}   
+    else if (myCenterY < 0){myCenterY = height;}   
+  }   
 }
 class Bullet extends Floater
 {
