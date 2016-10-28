@@ -8,7 +8,8 @@ public boolean SplashScreen=true;
 public void setup() 
 {
   //your code here
-  size(800,600);
+  fullScreen();
+  //size(800,600);
   fill(0);
   bob = new SpaceShip();
   phil= new Rock[10];
@@ -47,6 +48,7 @@ public void draw()
     text("Press L to accelerate",3*width/4,260);
     text("Press K to accelerate backwards",3*width/4,290);
     text("Press P to teleport",3*width/4,320);
+    text("Press esc to leave",width/2,450);
 
     noStroke();
     noFill();
