@@ -35,6 +35,7 @@ public void draw()
     textSize(30);
     textAlign(CENTER, TOP);
     text("Asteroids",width/2,100);
+    text("Click to begin",width/2,400);
     textSize(20);
     text("Press W to move forward",width/4,200);
     text("Press S to move backward + slow down",width/4,230);

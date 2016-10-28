@@ -1,6 +1,6 @@
 
 body {
-    background-color: rgb(200,200,200);
+    background-color: rgb(255,255,255);
     color: rgb(0,0,0);
     font-family: 'Yellowtail', cursive;
     text-align: center;
@@ -17,7 +17,7 @@ header {
 }
 
 footer {
-	font-style: italic;
-	font-size: 90%;
+	font-style: normal;
+	font-size: 200%;
 }
 
