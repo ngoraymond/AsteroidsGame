@@ -8,8 +8,8 @@ public boolean SplashScreen=true;
 public void setup() 
 {
   //your code here
-  fullScreen();
-  //size(800,600);
+  //fullScreen();
+  size(1600,900);
   fill(0);
   bob = new SpaceShip();
   phil= new Rock[10];
