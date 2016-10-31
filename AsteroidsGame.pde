@@ -8,8 +8,8 @@ public boolean SplashScreen=true;
 public void setup() 
 {
   //your code here
-  //fullScreen();
-  size(800,600);
+  fullScreen();
+  //size(800,600);
   fill(0);
   bob = new SpaceShip();
   phil= new Rock[10];
@@ -73,7 +73,7 @@ public void draw()
   }
   bob.move();
   bob.show();
-  double theDir=(Math.atan2(mouseY-(bob.getY()),mouseX-(bob.getX()))*(180/Math.PI));
+  //double theDir=(Math.atan2(mouseY-(bob.getY()),mouseX-(bob.getX()))*(180/Math.PI));
   //bob.setPointDirection((int)theDir);
   }
 
@@ -213,17 +213,10 @@ class SpaceShip extends Floater
     rotateSpeed=(int)(Math.random()*5)-2;
 
   }
-   public void move ()   //move the floater in the current direction of travel
+   public void move()   
   {      
-    //change the x and y coordinates by myDirectionX and myDirectionY   
-    myPointDirection+=rotateSpeed;
-    myCenterX += myDirectionX;    
-    myCenterY += myDirectionY;     
-    //wrap around screen    
-    if(myCenterX >width){myCenterX = 0;}    
-    else if (myCenterX<0){myCenterX = width;}    
-    if(myCenterY >height){myCenterY = 0;}   
-    else if (myCenterY < 0){myCenterY = height;}   
+    super.rotate(rotateSpeed);
+    super.move();   
   }   
 }
 class Bullet extends Floater
@@ -238,18 +231,12 @@ class Bullet extends Floater
   public double getDirectionY(){return myDirectionY;}   
   public void setPointDirection(int degrees){myPointDirection=degrees;}   
   public double getPointDirection(){return myPointDirection;} 
+  private int opacity;
   public Bullet()
   {
-    corners=4;
-    int[] xShape = {-1,1,1,-1};
-    int[] yShape = {-1,-1,1,1}; 
-    xCorners = xShape;
-    yCorners = yShape;
     myPointDirection=-90;
     myDirectionY=0;
-    myCenterY=-10;
-    myCenterX=-10;
-    myColor=color(200,200,200);
+    opacity=255;
 
   }
    public void movely(int dAmount)   
@@ -259,13 +246,14 @@ class Bullet extends Floater
     myDirectionY = ((dAmount) * Math.sin(dRadians));       
   } 
   public void show(){
-    fill(myColor);   
-    stroke(myColor);
+    fill(200,200,200,opacity);   
+    stroke(200,200,200,opacity);
     ellipse((int)myCenterX,(int)myCenterY,10,10);     
   }
   public void move(){
     myCenterX += myDirectionX;    
     myCenterY += myDirectionY;
+    //opacity--;
   }
 }
 class Star extends Floater{
