@@ -1,5 +1,6 @@
 //your variable declarations here
 public int numBulletUsed=0;
+public int bulletTotal=0;
 public SpaceShip bob;
 public Rock[] phil;
 public Bullet[] bill;
@@ -12,8 +13,8 @@ public void setup()
   size(1600,900);
   fill(0);
   bob = new SpaceShip();
-  phil= new Rock[10];
-  bill= new Bullet[20];
+  phil= new Rock[15];
+  bill= new Bullet[15];
   castor = new Star[200];
   for(int i = 0;i<phil.length;i++)
   {
@@ -73,11 +74,14 @@ public void draw()
   }
   bob.move();
   bob.show();
-  //double theDir=(Math.atan2(mouseY-(bob.getY()),mouseX-(bob.getX()))*(180/Math.PI));
-  //bob.setPointDirection((int)theDir);
+  text(bulletTotal + " bullets used",90,80);
+  text("HP",30,50);
+  fill(255,0,0);
+  rect(50,50,bob.getHP(),20);
   }
 
 }
+
 public void mouseClicked(){
   if(SplashScreen==true){
     SplashScreen=false;
@@ -88,8 +92,8 @@ public void mouseClicked(){
     bill[numBulletUsed].setY(bob.getY());
     bill[numBulletUsed].setX(bob.getX());
     bill[numBulletUsed].movely(10);
-
     numBulletUsed++;
+    bulletTotal++;
      if(numBulletUsed==bill.length){numBulletUsed=0;}
   }
      
@@ -162,6 +166,10 @@ class SpaceShip extends Floater
   public double getDirectionY(){return myDirectionY;}   
   public void setPointDirection(int degrees){myPointDirection=degrees;}   
   public double getPointDirection(){return myPointDirection;} 
+  //HP
+  private float hp;
+  public float getHP(){return hp;}
+  public void setHP(float z){hp=z;}
   public SpaceShip()
   {
     corners=6;
@@ -171,9 +179,11 @@ class SpaceShip extends Floater
     yCorners = yShape;
     myPointDirection=-90;
     myDirectionY=0;
-    myCenterY=height-50;
+    //myCenterY=height-50;
+    myCenterY=height/2;
     myCenterX=width/2;
     myColor=color(255,255,255);
+    hp=100;
 
   }
    public void movely(int dAmount)   
@@ -199,9 +209,9 @@ class SpaceShip extends Floater
   private int rotateSpeed;
   public Rock()
    {
-    corners=3;
-    int[] xShape = {-24,24,-24};
-    int[] yShape = {-24,0,24}; 
+    corners=6;
+    int[] xShape = {-12,12,24,12,-12,-24};
+    int[] yShape = {-24,-24,0,24,24,0}; 
     xCorners = xShape;
     yCorners = yShape;
     myPointDirection=(int)(Math.random()*360);
@@ -235,9 +245,7 @@ class Bullet extends Floater
   public Bullet()
   {
     myPointDirection=-90;
-    myDirectionY=0;
     opacity=255;
-
   }
    public void movely(int dAmount)   
   {          
