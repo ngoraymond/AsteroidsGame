@@ -2,8 +2,8 @@
 public int numBulletUsed=0;
 public int bulletTotal=0;
 public SpaceShip bob;
-public Rock[] phil;
-public Bullet[] bill;
+public ArrayList <Rock> phil;
+public ArrayList <Bullet> bill;
 public Star[] castor;
 public boolean SplashScreen=true;
 public void setup() 
@@ -13,17 +13,13 @@ public void setup()
   size(1600,900);
   fill(0);
   bob = new SpaceShip();
-  phil= new Rock[15];
-  bill= new Bullet[15];
+  phil= new ArrayList <Rock>();
   castor = new Star[200];
-  for(int i = 0;i<phil.length;i++)
+  for(int i = 0;i<15;i++)
   {
-  phil[i] = new Rock();
+  phil.add(i, new Rock());
   }
-  for(int i = 0;i<bill.length;i++)
-  {
-    bill[i]=new Bullet();
-  }
+  bill=new ArrayList <Bullet>();
   for(int i=0;i<castor.length;i++){
     castor[i]=new Star();
   }
@@ -62,15 +58,20 @@ public void draw()
     castor[i].rotate(2);
     castor[i].move();
   }
-  for(int i = 0;i<bill.length;i++)
+  for(int i = 0;i<bill.size();i++)
   {
-    bill[i].show();
-    bill[i].move();
+    bill.get(i).move();
+    bill.get(i).show();
+    if(bill.get(i).getX()<0 || bill.get(i).getX()>width ||bill.get(i).getY()<0 || bill.get(i).getY()>height)
+    {
+      bill.remove(i);
+      numBulletUsed--;
+    }
   }
-  for(int i = 0; i<phil.length;i++)
+  for(int i = 0; i<phil.size();i++)
   {
-  phil[i].move();
-  phil[i].show();
+  phil.get(i).move();
+  phil.get(i).show();
   }
   bob.move();
   bob.show();
@@ -88,13 +89,10 @@ public void mouseClicked(){
     redraw();
   }
   if(SplashScreen==false){
-    bill[numBulletUsed].setPointDirection((int)(bob.getPointDirection()));
-    bill[numBulletUsed].setY(bob.getY());
-    bill[numBulletUsed].setX(bob.getX());
-    bill[numBulletUsed].movely(10);
+    bill.add(new Bullet(bob,10));
+    bill.get(numBulletUsed).movely();
     numBulletUsed++;
     bulletTotal++;
-     if(numBulletUsed==bill.length){numBulletUsed=0;}
   }
      
 }
@@ -119,11 +117,11 @@ public void keyPressed(){
   }
   if(key == 'q'){
     bob.rotate(-5);
-    for(int i = 0;i<bill.length;i++){bill[i].rotate(-5);}
+    for(int i = 0;i<bill.size();i++){bill.get(i).rotate(-5);}
   }
   if(key == 'e'){
     bob.rotate(5);
-    for(int i = 0;i<bill.length;i++){bill[i].rotate(5);}
+    for(int i = 0;i<bill.size();i++){bill.get(i).rotate(5);}
   }
   if(key == 'l'){
    bob.accelerate(1.2);
@@ -220,7 +218,7 @@ class SpaceShip extends Floater
     myCenterY=(int)(Math.random()*height);
     myCenterX=(int)(Math.random()*width);
     myColor=color(255,0,255,50);
-    rotateSpeed=(int)(Math.random()*5)-2;
+    rotateSpeed=3;
 
   }
    public void move()   
@@ -242,12 +240,17 @@ class Bullet extends Floater
   public void setPointDirection(int degrees){myPointDirection=degrees;}   
   public double getPointDirection(){return myPointDirection;} 
   private int opacity;
-  public Bullet()
+  private double dAmount;
+  public Bullet(SpaceShip bob,double x)
   {
-    myPointDirection=-90;
+    myPointDirection=bob.getPointDirection();
     opacity=255;
+    myCenterX=bob.getX();
+    myCenterY=bob.getY();
+    dAmount=x;
+
   }
-   public void movely(int dAmount)   
+   public void movely()   
   {          
     double dRadians =myPointDirection*(Math.PI/180);     
     myDirectionX = ((dAmount) * Math.cos(dRadians));    
