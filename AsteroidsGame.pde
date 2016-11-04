@@ -6,6 +6,7 @@ public ArrayList <Rock> phil;
 public ArrayList <Bullet> bill;
 public Star[] castor;
 public boolean SplashScreen=true;
+public boolean endScreen=false;
 public void setup() 
 {
   //your code here
@@ -52,33 +53,53 @@ public void draw()
   }
   else{
   background(0);
-  for(int i = 0; i<castor.length;i++)
-  {
-    castor[i].show();
-    castor[i].rotate(2);
-    castor[i].move();
+  if(bob.getHP()<1){
+    endScreen=true;
   }
-  for(int i = 0;i<bill.size();i++)
-  {
-    bill.get(i).move();
-    bill.get(i).show();
-    if(bill.get(i).getX()<0 || bill.get(i).getX()>width ||bill.get(i).getY()<0 || bill.get(i).getY()>height)
-    {
-      bill.remove(i);
-      numBulletUsed--;
+  if(endScreen==false){
+      for(int i = 0; i<castor.length;i++)
+      {
+        castor[i].show();
+        castor[i].rotate(2);
+        castor[i].move();
+      }
+      for(int i = 0;i<bill.size();i++)
+      {
+        bill.get(i).move();
+        bill.get(i).show();
+        if(bill.get(i).getX()<0 || bill.get(i).getX()>width ||bill.get(i).getY()<0 || bill.get(i).getY()>height)
+        {
+          bill.remove(i);
+          numBulletUsed--;
+        }
+      }
+      for(int i = 0; i<phil.size();i++)
+      {
+      phil.get(i).move();
+      phil.get(i).show();
+      if(dist(bob.getX(), bob.getY(), phil.get(i).getX(), phil.get(i).getY())<20)
+          {
+            phil.remove(i);
+            bob.setHP(bob.getHP()-10);
+          }
+      }
+      bob.move();
+      bob.show();
+      text(bulletTotal + " bullets used",90,80);
+      text("HP",30,50);
+      fill(255,0,0);
+      rect(50,50,bob.getHP(),20);
     }
-  }
-  for(int i = 0; i<phil.size();i++)
-  {
-  phil.get(i).move();
-  phil.get(i).show();
-  }
-  bob.move();
-  bob.show();
-  text(bulletTotal + " bullets used",90,80);
-  text("HP",30,50);
-  fill(255,0,0);
-  rect(50,50,bob.getHP(),20);
+    else
+    {
+      textSize(50);
+      fill(255,0,0);
+      text("Game Over",width/2,height/8);
+      fill(255);
+      textSize(20);
+      text("Click To Retry",width/2,(height/4)+50);
+
+    }
   }
 
 }
@@ -88,11 +109,17 @@ public void mouseClicked(){
     SplashScreen=false;
     redraw();
   }
-  if(SplashScreen==false){
+  if(SplashScreen==false && endScreen==false){
     bill.add(new Bullet(bob,10));
     bill.get(numBulletUsed).movely();
     numBulletUsed++;
     bulletTotal++;
+  }
+  if(SplashScreen==false && endScreen==true){
+    bob.setHP(100);
+    numBulletUsed=0;
+    endScreen=false;
+    SplashScreen=true;
   }
      
 }
