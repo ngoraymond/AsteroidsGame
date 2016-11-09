@@ -1,12 +1,14 @@
 //your variable declarations here
-public int numBulletUsed=0;
 public int bulletTotal=0;
 public SpaceShip bob;
 public ArrayList <Rock> phil;
 public ArrayList <Bullet> bill;
+public ArrayList <BadShip> enemy;
+public ArrayList <Bullet> enemyBullet;
 public Star[] castor;
 public boolean SplashScreen=true;
 public boolean endScreen=false;
+public int level=1;
 public void setup() 
 {
   //your code here
@@ -15,6 +17,8 @@ public void setup()
   fill(0);
   bob = new SpaceShip();
   phil= new ArrayList <Rock>();
+  enemy = new ArrayList<BadShip>();
+  enemyBullet = new ArrayList<Bullet>();
   castor = new Star[200];
   for(int i = 0;i<15;i++)
   {
@@ -53,38 +57,89 @@ public void draw()
   }
   else{
   background(0);
-  if(bob.getHP()<1){
+  if(bob.getHP()<1)
+  {
     endScreen=true;
   }
   if(endScreen==false){
+      if(frameCount%240==0)
+      {
+        enemy.add(new BadShip());
+      }
       for(int i = 0; i<castor.length;i++)
       {
         castor[i].show();
         castor[i].rotate(2);
         castor[i].move();
       }
-      for(int i = 0;i<bill.size();i++)
+      for(int i = (bill.size()-1);i>=0;i--)
       {
         bill.get(i).move();
         bill.get(i).show();
         if(bill.get(i).getX()<0 || bill.get(i).getX()>width ||bill.get(i).getY()<0 || bill.get(i).getY()>height)
         {
           bill.remove(i);
-          numBulletUsed--;
+          i--;
         }
-      }
-      for(int i = 0; i<phil.size();i++)
-      {
-      phil.get(i).move();
-      phil.get(i).show();
-      if(dist(bob.getX(), bob.getY(), phil.get(i).getX(), phil.get(i).getY())<20)
-          {
-            phil.remove(i);
-            bob.setHP(bob.getHP()-10);
-          }
       }
       bob.move();
       bob.show();
+      for(int i=(enemy.size()-1);i>=0;i--){
+          enemy.get(i).move();
+          enemy.get(i).show();
+          if(enemy.get(i).getX()<(bob.getX()+10) && enemy.get(i).getX()>(bob.getX()-10)){
+            enemyBullet.add(new Bullet(enemy.get(i),6));
+            enemyBullet.get(enemyBullet.size()-1).movely();
+          }
+          for(int z=(bill.size()-1);z>=0;z--)
+          {
+              if(dist(bill.get(z).getX(),bill.get(z).getY(), enemy.get(i).getX(), enemy.get(i).getY())<20)
+              {
+                  enemy.remove(i);
+                  bill.remove(z);
+              }
+          }
+      }
+      for(int i=0;i<enemyBullet.size();i++){
+        enemyBullet.get(i).move();
+        enemyBullet.get(i).show();
+        if(dist(bob.getX(),bob.getY(), enemyBullet.get(i).getX(), enemyBullet.get(i).getY())<20)
+              {
+                  enemyBullet.remove(i);
+                  bob.setHP(bob.getHP()-(5*level));
+                  i--;
+              }
+
+      }
+      for(int i = (phil.size()-2); i>=0;i--)
+      {
+        phil.get(i).move();
+        phil.get(i).show();
+        if(dist(bob.getX(),bob.getY(), phil.get(i).getX(), phil.get(i).getY())<20)
+              {
+                  phil.remove(i);
+                  bob.setHP(bob.getHP()-(10*level));
+                  i--;
+              }
+        for(int z=(bill.size()-1);z>=0;z--)
+          {
+              if(dist(bill.get(z).getX(),bill.get(z).getY(), phil.get(i).getX(), phil.get(i).getY())<20)
+              {
+                  phil.remove(i);
+                  bill.remove(z);
+              }
+          }
+      }
+      if(phil.size()==0)
+      {
+        level++;
+        bob.setHP(100*level);
+        for(int i = 0;i<(15+(5*level));i++)
+          {
+            phil.add(i, new Rock());
+          }
+      }
+      fill(255);
       text(bulletTotal + " bullets used",90,80);
       text("HP",30,50);
       fill(255,0,0);
@@ -107,17 +162,22 @@ public void draw()
 public void mouseClicked(){
   if(SplashScreen==true){
     SplashScreen=false;
+    for(int i=(enemy.size()-1); i>-1;i--){enemy.remove(i);}
+    for(int i=(enemyBullet.size()-1); i>-1;i--){enemyBullet.remove(i);}
     redraw();
   }
   if(SplashScreen==false && endScreen==false){
     bill.add(new Bullet(bob,10));
-    bill.get(numBulletUsed).movely();
-    numBulletUsed++;
+    bill.get(bill.size()-1).movely();
     bulletTotal++;
   }
   if(SplashScreen==false && endScreen==true){
     bob.setHP(100);
-    numBulletUsed=0;
+    bulletTotal=0;
+    level=1;
+    bob.accelerate(0);
+    bob.setDirectionX(0);
+    bob.setDirectionY(0);
     endScreen=false;
     SplashScreen=true;
   }
@@ -217,7 +277,19 @@ class SpaceShip extends Floater
     myDirectionX = ((dAmount) * Math.cos(dRadians));    
     myDirectionY = ((dAmount) * Math.sin(dRadians));       
   } 
-}  
+} 
+  class BadShip extends SpaceShip
+{
+  public BadShip()
+  {
+    myColor=color(0,0,255);
+    myPointDirection=90;
+    myDirectionY=3;
+    myCenterX=((float)(Math.random()*width));
+    myCenterY=(float)(Math.random()*height);
+  }
+}
+
   class Rock extends Floater  
 {   
     //your code here
