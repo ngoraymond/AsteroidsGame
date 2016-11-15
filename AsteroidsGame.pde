@@ -19,6 +19,7 @@ public void setup()
   phil= new ArrayList <Rock>();
   enemy = new ArrayList<BadShip>();
   enemyBullet = new ArrayList<Bullet>();
+  enemy.add(new BadShip());
   castor = new Star[200];
   for(int i = 0;i<15;i++)
   {
@@ -72,32 +73,38 @@ public void draw()
         castor[i].rotate(2);
         castor[i].move();
       }
+      bob.move();
+      bob.show();
       for(int i = (bill.size()-1);i>=0;i--)
       {
         bill.get(i).move();
         bill.get(i).show();
-        if(bill.get(i).getX()<0 || bill.get(i).getX()>width ||bill.get(i).getY()<0 || bill.get(i).getY()>height)
-        {
-          bill.remove(i);
-          i--;
-        }
+        if(bill.get(i).getX()<-50 || bill.get(i).getX()>(width+50) ||bill.get(i).getY()<-50 || bill.get(i).getY()>(height+50))
+                    {
+                      bill.remove(i);
+                    } 
       }
-      bob.move();
-      bob.show();
       for(int i=(enemy.size()-1);i>=0;i--){
           enemy.get(i).move();
           enemy.get(i).show();
-          if(enemy.get(i).getX()<(bob.getX()+10) && enemy.get(i).getX()>(bob.getX()-10)){
-            enemyBullet.add(new Bullet(enemy.get(i),6));
-            enemyBullet.get(enemyBullet.size()-1).movely();
-          }
-          for(int z=(bill.size()-1);z>=0;z--)
+          if(dist(bob.getX(),bob.getY(),enemy.get(i).getX(), enemy.get(i).getY())<20)
           {
-              if(dist(bill.get(z).getX(),bill.get(z).getY(), enemy.get(i).getX(), enemy.get(i).getY())<20)
-              {
-                  enemy.remove(i);
-                  bill.remove(z);
-              }
+            enemy.remove(i);
+            bob.setHP(bob.getHP()-(10+(10*level)));
+          }
+          else{
+            if(enemy.get(i).getX()<(bob.getX()+10) && enemy.get(i).getX()>(bob.getX()-10)){
+                      enemyBullet.add(new Bullet(enemy.get(i),6));
+                      enemyBullet.get(enemyBullet.size()-1).movely();
+                    }
+            for(int z=(bill.size()-1);z>=0;z--)
+            {
+                  if(dist(enemy.get(i).getX(), enemy.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<20)
+                      {
+                        bill.remove(z);
+                        enemy.remove(i);
+                      }
+            }
           }
       }
       for(int i=0;i<enemyBullet.size();i++){
@@ -105,39 +112,41 @@ public void draw()
         enemyBullet.get(i).show();
         if(dist(bob.getX(),bob.getY(), enemyBullet.get(i).getX(), enemyBullet.get(i).getY())<20)
               {
-                  enemyBullet.remove(i);
+                  //enemyBullet.remove(i);
                   bob.setHP(bob.getHP()-(5*level));
-                  i--;
+                  
               }
 
       }
-      for(int i = (phil.size()-2); i>=0;i--)
-      {
+      if(phil.size()==0)
+          {
+              level++;
+              bob.setHP(100*level);
+              for(int w = 0;w<(15+(5*level));w++)
+              {
+                  phil.add(w, new Rock());
+              }
+          }  
+      for(int i=0; i<phil.size();i++)
+      { 
         phil.get(i).move();
         phil.get(i).show();
         if(dist(bob.getX(),bob.getY(), phil.get(i).getX(), phil.get(i).getY())<20)
               {
                   phil.remove(i);
                   bob.setHP(bob.getHP()-(10*level));
-                  i--;
               }
-        for(int z=(bill.size()-1);z>=0;z--)
+        else{
+          for(int z = 0;i<bill.size();i++)
           {
-              if(dist(bill.get(z).getX(),bill.get(z).getY(), phil.get(i).getX(), phil.get(i).getY())<20)
-              {
+            if(dist(bill.get(z).getX(),bill.get(z).getY(), phil.get(i).getX(), phil.get(i).getY())<20)
+                {
                   phil.remove(i);
                   bill.remove(z);
-              }
+                }
           }
-      }
-      if(phil.size()==0)
-      {
-        level++;
-        bob.setHP(100*level);
-        for(int i = 0;i<(15+(5*level));i++)
-          {
-            phil.add(i, new Rock());
-          }
+        }
+          
       }
       fill(255);
       text(bulletTotal + " bullets used",90,80);
@@ -153,7 +162,6 @@ public void draw()
       fill(255);
       textSize(20);
       text("Click To Retry",width/2,(height/4)+50);
-
     }
   }
 
@@ -162,8 +170,6 @@ public void draw()
 public void mouseClicked(){
   if(SplashScreen==true){
     SplashScreen=false;
-    for(int i=(enemy.size()-1); i>-1;i--){enemy.remove(i);}
-    for(int i=(enemyBullet.size()-1); i>-1;i--){enemyBullet.remove(i);}
     redraw();
   }
   if(SplashScreen==false && endScreen==false){
