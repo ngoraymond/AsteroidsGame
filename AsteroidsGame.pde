@@ -23,7 +23,7 @@ public void setup()
   castor = new Star[200];
   for(int i = 0;i<15;i++)
   {
-  phil.add(i, new Rock());
+  phil.add(new Rock());
   }
   bill=new ArrayList <Bullet>();
   for(int i=0;i<castor.length;i++){
@@ -63,7 +63,7 @@ public void draw()
     endScreen=true;
   }
   if(endScreen==false){
-      if(frameCount%240==0)
+      if(frameCount%(300/level)==0)
       {
         enemy.add(new BadShip());
       }
@@ -101,8 +101,8 @@ public void draw()
             {
                   if(dist(enemy.get(i).getX(), enemy.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<20)
                       {
-                        bill.remove(z);
                         enemy.remove(i);
+                        bob.setHP(bob.getHP()+(20*level));
                       }
             }
           }
@@ -127,7 +127,7 @@ public void draw()
                   phil.add(w, new Rock());
               }
           }  
-      for(int i=0; i<phil.size();i++)
+      for(int i=(phil.size()-1);i>=0;i--)
       { 
         phil.get(i).move();
         phil.get(i).show();
@@ -137,12 +137,12 @@ public void draw()
                   bob.setHP(bob.getHP()-(10*level));
               }
         else{
-          for(int z = 0;i<bill.size();i++)
+          for(int z=(bill.size()-1);z>=0;z--)
           {
             if(dist(bill.get(z).getX(),bill.get(z).getY(), phil.get(i).getX(), phil.get(i).getY())<20)
                 {
                   phil.remove(i);
-                  bill.remove(z);
+                  bob.setHP(bob.getHP()+(5*level));
                 }
           }
         }
@@ -151,11 +151,14 @@ public void draw()
       fill(255);
       text(bulletTotal + " bullets used",90,80);
       text("HP",30,50);
+      text("Level "+level,width-60,30);
       fill(255,0,0);
       rect(50,50,bob.getHP(),20);
     }
     else
     {
+      for(int i=0;i<enemy.size();i++){enemy.remove(i);}
+        for(int i=0;i<enemyBullet.size();i++){enemyBullet.remove(i);}
       textSize(50);
       fill(255,0,0);
       text("Game Over",width/2,height/8);
@@ -190,6 +193,8 @@ public void mouseClicked(){
      
 }
 public void keyPressed(){
+  if(key == ' '){
+  }
   if(key == 'w'){
     //bob.setDirectionY(bob.getPointDirection());
     bob.movely(5);
@@ -242,6 +247,13 @@ public void keyPressed(){
      bob.setDirectionY(0);
      bob.setPointDirection((int)(Math.random()*360));
   }
+  if(key == 'm'){
+    for(int i=0;i<phil.size();i++){
+      phil.remove(i);
+    }
+
+  }
+
 
 }
 class SpaceShip extends Floater  
@@ -358,8 +370,8 @@ class Bullet extends Floater
    public void movely()   
   {          
     double dRadians =myPointDirection*(Math.PI/180);     
-    myDirectionX = ((dAmount) * Math.cos(dRadians));    
-    myDirectionY = ((dAmount) * Math.sin(dRadians));       
+    myDirectionX = ((dAmount+bob.getDirectionX()) * Math.cos(dRadians));    
+    myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));       
   } 
   public void show(){
     fill(200,200,200,opacity);   
