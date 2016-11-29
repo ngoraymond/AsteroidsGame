@@ -8,6 +8,7 @@ public ArrayList <Bullet> enemyBullet;
 public Star[] castor;
 public boolean SplashScreen=true;
 public boolean endScreen=false;
+public boolean cheats=false;
 public int level=1;
 public void setup() 
 {
@@ -46,11 +47,13 @@ public void draw()
     text("Press A to move left",width/4,260);
     text("Press D to move right",width/4,290);
     text("Mouse Click to fire",width/4,320);
+    text("Press N to spam bullets",width/4,350);
     text("Press Q to rotate left",3*width/4,200);
     text("Press E to rotate right",3*width/4,230);
     text("Press L to accelerate",3*width/4,260);
     text("Press K to accelerate backwards",3*width/4,290);
     text("Press P to teleport",3*width/4,320);
+    text("Press M to level instantly",3*width/4,350);
     //text("Press esc to leave",width/2,450);
 
     noStroke();
@@ -66,6 +69,12 @@ public void draw()
       if(frameCount%(300/level)==0)
       {
         enemy.add(new BadShip());
+      }
+      if(cheats==true){
+              if(mousePressed){
+                bill.add(new Bullet(bob,10));
+                bulletTotal++;
+              }
       }
       for(int i = 0; i<castor.length;i++)
       {
@@ -87,30 +96,37 @@ public void draw()
       for(int i=(enemy.size()-1);i>=0;i--){
           enemy.get(i).move();
           enemy.get(i).show();
-          if(dist(bob.getX(),bob.getY(),enemy.get(i).getX(), enemy.get(i).getY())<20)
+          boolean dead = false;
+          if(enemy.get(i).getX()<(bob.getX()+20) && enemy.get(i).getX()>(bob.getX()-20))
+                        {
+                          enemyBullet.add(new Bullet(enemy.get(i),6));
+                        }
+          if(dist(bob.getX(),bob.getY(),enemy.get(i).getX(), enemy.get(i).getY())<=20)
           {
-            enemy.remove(i);
+            enemyBullet.add(new Bullet(enemy.get(i),6));
+            dead=true;
             bob.setHP(bob.getHP()-(10+(10*level)));
           }
           else{
-            if(enemy.get(i).getX()<(bob.getX()+10) && enemy.get(i).getX()>(bob.getX()-10)){
-                      enemyBullet.add(new Bullet(enemy.get(i),6));
-                      enemyBullet.get(enemyBullet.size()-1).movely();
-                    }
             for(int z=(bill.size()-1);z>=0;z--)
             {
-                  if(dist(enemy.get(i).getX(), enemy.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<20)
+                  if(dist(enemy.get(i).getX(), enemy.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<=20)
                       {
-                        enemy.remove(i);
+                        enemyBullet.add(new Bullet(enemy.get(i),6));
                         bob.setHP(bob.getHP()+(20*level));
-                      }
+                        dead=true;       
+                      }       
             }
+          }
+        if(dead==true)
+          {
+          enemy.remove(i);
           }
       }
       for(int i=0;i<enemyBullet.size();i++){
         enemyBullet.get(i).move();
         enemyBullet.get(i).show();
-        if(dist(bob.getX(),bob.getY(), enemyBullet.get(i).getX(), enemyBullet.get(i).getY())<20)
+        if(dist(bob.getX(),bob.getY(), enemyBullet.get(i).getX(), enemyBullet.get(i).getY())<=20)
               {
                   //enemyBullet.remove(i);
                   bob.setHP(bob.getHP()-(5*level));
@@ -131,21 +147,25 @@ public void draw()
       { 
         phil.get(i).move();
         phil.get(i).show();
-        if(dist(bob.getX(),bob.getY(), phil.get(i).getX(), phil.get(i).getY())<20)
+        boolean dead=false;
+        if(dist(bob.getX(),bob.getY(), phil.get(i).getX(), phil.get(i).getY())<=20)
               {
-                  phil.remove(i);
+                  dead=true;
                   bob.setHP(bob.getHP()-(10*level));
               }
         else{
           for(int z=(bill.size()-1);z>=0;z--)
           {
-            if(dist(bill.get(z).getX(),bill.get(z).getY(), phil.get(i).getX(), phil.get(i).getY())<20)
+            if(dist(bill.get(z).getX(),bill.get(z).getY(), phil.get(i).getX(), phil.get(i).getY())<=20)
                 {
-                  phil.remove(i);
+                  dead=true;
                   bob.setHP(bob.getHP()+(5*level));
                 }
           }
         }
+        if(dead==true)
+          {
+            phil.remove(i);
           
       }
       fill(255);
@@ -154,11 +174,13 @@ public void draw()
       text("Level "+level,width-60,30);
       fill(255,0,0);
       rect(50,50,bob.getHP(),20);
+        }
     }
     else
     {
       for(int i=0;i<enemy.size();i++){enemy.remove(i);}
-        for(int i=0;i<enemyBullet.size();i++){enemyBullet.remove(i);}
+      for(int i=0;i<enemyBullet.size();i++){enemyBullet.remove(i);}
+      for(int i=0;i<phil.size();i++){phil.remove(i);}
       textSize(50);
       fill(255,0,0);
       text("Game Over",width/2,height/8);
@@ -177,7 +199,6 @@ public void mouseClicked(){
   }
   if(SplashScreen==false && endScreen==false){
     bill.add(new Bullet(bob,10));
-    bill.get(bill.size()-1).movely();
     bulletTotal++;
   }
   if(SplashScreen==false && endScreen==true){
@@ -253,6 +274,12 @@ public void keyPressed(){
     }
 
   }
+  if(key == 'n'){
+    if(cheats==false)
+        cheats=true;
+    else  
+        cheats=false;
+    }
 
 
 }
@@ -365,14 +392,11 @@ class Bullet extends Floater
     myCenterX=bob.getX();
     myCenterY=bob.getY();
     dAmount=x;
-
-  }
-   public void movely()   
-  {          
     double dRadians =myPointDirection*(Math.PI/180);     
     myDirectionX = ((dAmount+bob.getDirectionX()) * Math.cos(dRadians));    
-    myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));       
-  } 
+    myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));
+
+  }
   public void show(){
     fill(200,200,200,opacity);   
     stroke(200,200,200,opacity);
