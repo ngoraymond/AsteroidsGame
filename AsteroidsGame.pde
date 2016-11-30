@@ -1,5 +1,6 @@
 //your variable declarations here
 public int bulletTotal=0;
+public int mineTotal=0;
 public SpaceShip bob;
 public ArrayList <Rock> phil;
 public ArrayList <Bullet> bill;
@@ -110,12 +111,18 @@ public void draw()
           else{
             for(int z=(bill.size()-1);z>=0;z--)
             {
+                  boolean bulletDead=false;
                   if(dist(enemy.get(i).getX(), enemy.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<=20)
                       {
                         enemyBullet.add(new Bullet(enemy.get(i),6));
                         bob.setHP(bob.getHP()+(20*level));
-                        dead=true;       
-                      }       
+                        dead=true;
+                        bulletDead=true;       
+                      } 
+                  if(bulletDead==true)
+                  {
+                    bill.remove(z);
+                  }      
             }
           }
         if(dead==true)
@@ -134,10 +141,11 @@ public void draw()
               }
 
       }
+      //Level Up
       if(phil.size()==0)
           {
               level++;
-              bob.setHP(100*level);
+              bob.setHP(bob.getHP()+(100*level));
               for(int w = 0;w<(15+(5*level));w++)
               {
                   phil.add(w, new Rock());
@@ -156,11 +164,17 @@ public void draw()
         else{
           for(int z=(bill.size()-1);z>=0;z--)
           {
+            boolean bulletDead = false;
             if(dist(bill.get(z).getX(),bill.get(z).getY(), phil.get(i).getX(), phil.get(i).getY())<=20)
                 {
                   dead=true;
                   bob.setHP(bob.getHP()+(5*level));
+                  bulletDead=true;   
                 }
+            if(bulletDead==true)
+                  {
+                    bill.remove(z);
+                  }      
           }
         }
         if(dead==true)
@@ -170,11 +184,15 @@ public void draw()
       }
       fill(255);
       text(bulletTotal + " bullets used",90,80);
+      text(mineTotal + " mines placed",93,110);
       text("HP",30,50);
       text("Level "+level,width-60,30);
       fill(255,0,0);
       rect(50,50,bob.getHP(),20);
-        }
+      fill(255);
+      text((int)(bob.getHP()),width/6,50);
+      if(cheats==true){text("RapidFire On",width/2,150);}
+      }
     }
     else
     {
@@ -194,8 +212,8 @@ public void draw()
 
 public void mouseClicked(){
   if(SplashScreen==true){
+    level=1;
     SplashScreen=false;
-    redraw();
   }
   if(SplashScreen==false && endScreen==false){
     bill.add(new Bullet(bob,10));
@@ -204,7 +222,6 @@ public void mouseClicked(){
   if(SplashScreen==false && endScreen==true){
     bob.setHP(100);
     bulletTotal=0;
-    level=1;
     bob.accelerate(0);
     bob.setDirectionX(0);
     bob.setDirectionY(0);
@@ -214,8 +231,6 @@ public void mouseClicked(){
      
 }
 public void keyPressed(){
-  if(key == ' '){
-  }
   if(key == 'w'){
     //bob.setDirectionY(bob.getPointDirection());
     bob.movely(5);
@@ -280,6 +295,10 @@ public void keyPressed(){
     else  
         cheats=false;
     }
+  if(key == ' '){
+    bill.add(new Bullet(bob,0));
+    mineTotal++;
+  }
 
 
 }
@@ -392,9 +411,12 @@ class Bullet extends Floater
     myCenterX=bob.getX();
     myCenterY=bob.getY();
     dAmount=x;
-    double dRadians =myPointDirection*(Math.PI/180);     
-    myDirectionX = ((dAmount+bob.getDirectionX()) * Math.cos(dRadians));    
-    myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));
+    if(x>0)
+        {
+          double dRadians =myPointDirection*(Math.PI/180);     
+          myDirectionX = ((dAmount+bob.getDirectionX()) * Math.cos(dRadians));    
+          myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));
+        }
 
   }
   public void show(){
