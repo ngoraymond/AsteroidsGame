@@ -73,7 +73,7 @@ public void draw()
       }
       if(cheats==true){
               if(mousePressed){
-                bill.add(new Bullet(bob,10));
+                bill.add(new Bullet(bob,10,"gray"));
                 bulletTotal++;
               }
       }
@@ -100,11 +100,11 @@ public void draw()
           boolean dead = false;
           if(enemy.get(i).getX()<(bob.getX()+20) && enemy.get(i).getX()>(bob.getX()-20))
                         {
-                          enemyBullet.add(new Bullet(enemy.get(i),6));
+                          enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
                         }
           if(dist(bob.getX(),bob.getY(),enemy.get(i).getX(), enemy.get(i).getY())<=20)
           {
-            enemyBullet.add(new Bullet(enemy.get(i),6));
+            enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
             dead=true;
             bob.setHP(bob.getHP()-(10+(10*level)));
           }
@@ -114,7 +114,7 @@ public void draw()
                   boolean bulletDead=false;
                   if(dist(enemy.get(i).getX(), enemy.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<=20)
                       {
-                        enemyBullet.add(new Bullet(enemy.get(i),6));
+                        enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
                         bob.setHP(bob.getHP()+(20*level));
                         dead=true;
                         bulletDead=true;       
@@ -133,12 +133,14 @@ public void draw()
       for(int i=0;i<enemyBullet.size();i++){
         enemyBullet.get(i).move();
         enemyBullet.get(i).show();
+        boolean isDead=false;
         if(dist(bob.getX(),bob.getY(), enemyBullet.get(i).getX(), enemyBullet.get(i).getY())<=20)
               {
-                  //enemyBullet.remove(i);
+                  isDead=true;
                   bob.setHP(bob.getHP()-(5*level));
                   
               }
+        if(isDead==true){enemyBullet.remove(i);}
 
       }
       //Level Up
@@ -171,17 +173,11 @@ public void draw()
                   bob.setHP(bob.getHP()+(5*level));
                   bulletDead=true;   
                 }
-            if(bulletDead==true)
-                  {
-                    bill.remove(z);
-                  }      
+            if(bulletDead==true){bill.remove(z);}      
           }
+          if(dead==true){phil.remove(i);}
         }
-        if(dead==true)
-          {
-            phil.remove(i);
-          
-      }
+      if(level>300){endScreen=true;}  
       fill(255);
       text(bulletTotal + " bullets used",90,80);
       text(mineTotal + " mines placed",93,110);
@@ -216,7 +212,7 @@ public void mouseClicked(){
     SplashScreen=false;
   }
   if(SplashScreen==false && endScreen==false){
-    bill.add(new Bullet(bob,10));
+    bill.add(new Bullet(bob,10,"gray"));
     bulletTotal++;
   }
   if(SplashScreen==false && endScreen==true){
@@ -295,13 +291,23 @@ public void keyPressed(){
     else  
         cheats=false;
     }
-  if(key == ' '){
-    bill.add(new Bullet(bob,0));
-    mineTotal++;
+  if(cheats==true)
+    {
+    if(key == ' '){
+          bill.add(new Bullet(bob,0,"orange"));
+          mineTotal++;
+        }
+    }
   }
-
-
-}
+  public void keyReleased() {
+    if(cheats==false)
+    {
+     if(key == ' '){
+          bill.add(new Bullet(bob,0,"orange"));
+          mineTotal++;
+        }
+    }
+  }
 class SpaceShip extends Floater  
 {   
     //your code here
@@ -402,12 +408,11 @@ class Bullet extends Floater
   public double getDirectionY(){return myDirectionY;}   
   public void setPointDirection(int degrees){myPointDirection=degrees;}   
   public double getPointDirection(){return myPointDirection;} 
-  private int opacity;
+  private color myColor;
   private double dAmount;
-  public Bullet(SpaceShip bob,double x)
+  public Bullet(SpaceShip bob,double x, String text)
   {
     myPointDirection=bob.getPointDirection();
-    opacity=255;
     myCenterX=bob.getX();
     myCenterY=bob.getY();
     dAmount=x;
@@ -417,17 +422,28 @@ class Bullet extends Floater
           myDirectionX = ((dAmount+bob.getDirectionX()) * Math.cos(dRadians));    
           myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));
         }
+    if(text=="gray")
+        {
+          myColor=color(200,200,200);
+        }
+    else if(text=="red")
+        {
+          myColor=color(255,0,0);
+        }
+    else
+        {
+          myColor=color(204,161,8);
+        }
 
   }
   public void show(){
-    fill(200,200,200,opacity);   
-    stroke(200,200,200,opacity);
+    fill(myColor);   
+    noStroke();
     ellipse((int)myCenterX,(int)myCenterY,10,10);     
   }
   public void move(){
     myCenterX += myDirectionX;    
     myCenterY += myDirectionY;
-    //opacity--;
   }
 }
 class Star extends Floater{
