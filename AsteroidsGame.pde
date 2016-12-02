@@ -11,6 +11,7 @@ public boolean SplashScreen=true;
 public boolean endScreen=false;
 public boolean cheats=false;
 public int level=1;
+int shipscore=0;
 public void setup() 
 {
   //your code here
@@ -105,8 +106,10 @@ public void draw()
           if(dist(bob.getX(),bob.getY(),enemy.get(i).getX(), enemy.get(i).getY())<=20)
           {
             enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
-            dead=true;
             bob.setHP(bob.getHP()-(10+(10*level)));
+            shipscore+=200;
+            enemy.remove(i);
+            break;
           }
           else{
             for(int z=(bill.size()-1);z>=0;z--)
@@ -116,19 +119,14 @@ public void draw()
                       {
                         enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
                         bob.setHP(bob.getHP()+(20*level));
+                        shipscore+=500;
                         dead=true;
                         bulletDead=true;       
                       } 
-                  if(bulletDead==true)
-                  {
-                    bill.remove(z);
-                  }      
+                  if(bulletDead==true){bill.remove(z);}      
             }
           }
-        if(dead==true)
-          {
-          enemy.remove(i);
-          }
+        if(dead==true){enemy.remove(i);}
       }
       for(int i=0;i<enemyBullet.size();i++){
         enemyBullet.get(i).move();
@@ -158,10 +156,11 @@ public void draw()
         phil.get(i).move();
         phil.get(i).show();
         boolean dead=false;
-        if(dist(bob.getX(),bob.getY(), phil.get(i).getX(), phil.get(i).getY())<=20)
+        if(dist(bob.getX(),bob.getY(), phil.get(i).getX(), phil.get(i).getY())<20)
               {
-                  dead=true;
                   bob.setHP(bob.getHP()-(10*level));
+                  phil.remove(i);
+                  break;
               }
         else{
           for(int z=(bill.size()-1);z>=0;z--)
@@ -195,12 +194,25 @@ public void draw()
       for(int i=0;i<enemy.size();i++){enemy.remove(i);}
       for(int i=0;i<enemyBullet.size();i++){enemyBullet.remove(i);}
       for(int i=0;i<phil.size();i++){phil.remove(i);}
+      for(int i=0;i<bill.size();i++){bill.remove(i);}
       textSize(50);
       fill(255,0,0);
       text("Game Over",width/2,height/8);
+      int levelScore=(level-1)*1000;
+      int bulletscore=(bulletTotal*2)+(mineTotal*5);
+      int score=(levelScore+shipscore)-bulletscore;
       fill(255);
       textSize(20);
       text("Click To Retry",width/2,(height/4)+50);
+      textSize(50);
+      if(score>-1){
+        fill(0,255,0);
+        }
+      else 
+       {
+        fill(255,0,0);
+       }
+      text("Score:"+score,width/2,3*height/4);
     }
   }
 
@@ -208,7 +220,6 @@ public void draw()
 
 public void mouseClicked(){
   if(SplashScreen==true){
-    level=1;
     SplashScreen=false;
   }
   if(SplashScreen==false && endScreen==false){
@@ -221,6 +232,10 @@ public void mouseClicked(){
     bob.accelerate(0);
     bob.setDirectionX(0);
     bob.setDirectionY(0);
+    bob.setX(width/2);
+    bob.setY(height/2);
+    for(int i = 0;i<15;i++){phil.add(new Rock());}
+    level=1;
     endScreen=false;
     SplashScreen=true;
   }
