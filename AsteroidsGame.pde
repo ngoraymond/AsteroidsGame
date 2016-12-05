@@ -57,7 +57,6 @@ public void draw()
     text("Press P to teleport",3*width/4,320);
     text("Press M to level instantly",3*width/4,350);
     //text("Press esc to leave",width/2,450);
-
     noStroke();
     noFill();
   }
@@ -100,9 +99,17 @@ public void draw()
           enemy.get(i).show();
           boolean dead = false;
           if(enemy.get(i).getX()<(bob.getX()+20) && enemy.get(i).getX()>(bob.getX()-20))
-                        {
-                          enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
-                        }
+                {
+                          enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
+                          
+                                enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
+                                enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
+                                if(i%5==0)
+                                  {
+                                      enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
+                                  }
+                          
+                }
           if(dist(bob.getX(),bob.getY(),enemy.get(i).getX(), enemy.get(i).getY())<=20)
           {
             enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
@@ -135,9 +142,21 @@ public void draw()
         if(dist(bob.getX(),bob.getY(), enemyBullet.get(i).getX(), enemyBullet.get(i).getY())<=20)
               {
                   isDead=true;
-                  bob.setHP(bob.getHP()-(5*level));
+                  bob.setHP(bob.getHP()-((3+level)*level));
                   
               }
+         for(int z=(bill.size()-1);z>=0;z--)
+            {
+              boolean bulletDown=false;
+              if(dist(enemyBullet.get(i).getX(), enemyBullet.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<=20)
+                      {
+                        bob.setHP(bob.getHP()+(25*level));
+                        shipscore+=600;
+                        isDead=true;
+                        bulletDown=true;
+                      }
+              if(bulletDown==true){bill.remove(z);}
+            }
         if(isDead==true){enemyBullet.remove(i);}
 
       }
@@ -437,19 +456,25 @@ class Bullet extends Floater
           myDirectionX = ((dAmount+bob.getDirectionX()) * Math.cos(dRadians));    
           myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));
         }
-    if(text=="gray")
+    if(text=="gray"){myColor=color(200,200,200);}
+    else if(text=="red"){myColor=color(255,0,0);}
+    else{myColor=color(204,161,8);}
+  }
+  public Bullet(SpaceShip bob,double x, String text,int degrees)
+  {
+    myPointDirection=degrees;
+    myCenterX=bob.getX();
+    myCenterY=bob.getY();
+    dAmount=x;
+    if(x>0)
         {
-          myColor=color(200,200,200);
+          double dRadians =myPointDirection*(Math.PI/180);     
+          myDirectionX = ((dAmount+bob.getDirectionX()) * Math.cos(dRadians));    
+          myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));
         }
-    else if(text=="red")
-        {
-          myColor=color(255,0,0);
-        }
-    else
-        {
-          myColor=color(204,161,8);
-        }
-
+    if(text=="gray"){myColor=color(200,200,200);}
+    else if(text=="red"){myColor=color(255,0,0);}
+    else{myColor=color(204,161,8);}
   }
   public void show(){
     fill(myColor);   
