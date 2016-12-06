@@ -10,6 +10,7 @@ public Star[] castor;
 public boolean SplashScreen=true;
 public boolean endScreen=false;
 public boolean cheats=false;
+public boolean risingSun=false;
 public int level=1;
 int shipscore=0;
 public void setup() 
@@ -77,6 +78,10 @@ public void draw()
                 bulletTotal++;
               }
       }
+      if(risingSun==true&&mousePressed){
+              for(int i=1;i<25;i++){bill.add(new Bullet(bob,10,"gray",(int)(bob.getPointDirection()+(15*i))));}
+              bulletTotal+=24;
+      }
       for(int i = 0; i<castor.length;i++)
       {
         castor[i].show();
@@ -97,17 +102,17 @@ public void draw()
       for(int i=(enemy.size()-1);i>=0;i--){
           enemy.get(i).move();
           enemy.get(i).show();
+          //enemy.get(i).rotate(5);
           boolean dead = false;
           if(enemy.get(i).getX()<(bob.getX()+20) && enemy.get(i).getX()>(bob.getX()-20))
                 {
+                          if((i+1)%5==0){enemyBullet.add(new Bullet(enemy.get(i),6,"red"));}
                           enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
-                          
+                          //enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
+                            if(cheats==true){
                                 enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
-                                enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
-                                if(i%5==0)
-                                  {
-                                      enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
-                                  }
+                                //enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
+                              }
                           
                 }
           if(dist(bob.getX(),bob.getY(),enemy.get(i).getX(), enemy.get(i).getY())<=20)
@@ -124,7 +129,7 @@ public void draw()
                   boolean bulletDead=false;
                   if(dist(enemy.get(i).getX(), enemy.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<=20)
                       {
-                        enemyBullet.add(new Bullet(enemy.get(i),6,"red"));
+                        for(int k=0;k<31;k++){enemyBullet.add(new Bullet(enemy.get(i),6,"blood",(int)(Math.random()*360)));}
                         bob.setHP(bob.getHP()+(20*level));
                         shipscore+=500;
                         dead=true;
@@ -138,6 +143,7 @@ public void draw()
       for(int i=0;i<enemyBullet.size();i++){
         enemyBullet.get(i).move();
         enemyBullet.get(i).show();
+        enemyBullet.get(i).rotate(5);
         boolean isDead=false;
         if(dist(bob.getX(),bob.getY(), enemyBullet.get(i).getX(), enemyBullet.get(i).getY())<=20)
               {
@@ -231,7 +237,8 @@ public void draw()
        {
         fill(255,0,0);
        }
-      text("Score:"+score,width/2,3*height/4);
+      if(cheats==false){text("Score: "+score,width/2,3*height/4);}
+      if(cheats==true){text("Score: Null",width/2,3*height/4);}
     }
   }
 
@@ -325,7 +332,13 @@ public void keyPressed(){
     else  
         cheats=false;
     }
-  if(cheats==true)
+    if(key == 'b'){
+    if(risingSun==false)
+        risingSun=true;
+    else  
+        risingSun=false;
+    }
+  if(risingSun==true)
     {
     if(key == ' '){
           bill.add(new Bullet(bob,0,"orange"));
@@ -474,6 +487,7 @@ class Bullet extends Floater
         }
     if(text=="gray"){myColor=color(200,200,200);}
     else if(text=="red"){myColor=color(255,0,0);}
+    else if(text=="blood"){myColor=color(104,2,2);}
     else{myColor=color(204,161,8);}
   }
   public void show(){
@@ -482,6 +496,12 @@ class Bullet extends Floater
     ellipse((int)myCenterX,(int)myCenterY,10,10);     
   }
   public void move(){
+    if(myColor==color(104,2,2))
+    {
+      double dRadians =myPointDirection*(Math.PI/180);     
+      myDirectionX = ((dAmount+bob.getDirectionX()) * Math.cos(dRadians));    
+      myDirectionY = ((dAmount+bob.getDirectionX()) * Math.sin(dRadians));
+    }
     myCenterX += myDirectionX;    
     myCenterY += myDirectionY;
   }
