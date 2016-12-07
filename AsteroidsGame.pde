@@ -7,12 +7,13 @@ public ArrayList <Bullet> bill;
 public ArrayList <BadShip> enemy;
 public ArrayList <Bullet> enemyBullet;
 public Star[] castor;
-public boolean SplashScreen=true;
-public boolean endScreen=false;
-public boolean cheats=false;
-public boolean risingSun=false;
-public int level=1;
+boolean SplashScreen=true;
+boolean endScreen=false;
+boolean cheats=false;
+boolean risingSun=false;
+int level=1;
 int shipscore=0;
+int risingMoon = 5;
 public void setup() 
 {
   //your code here
@@ -43,7 +44,8 @@ public void draw()
     textSize(30);
     textAlign(CENTER, TOP);
     text("Asteroids",width/2,100);
-    text("Click to begin",width/2,400);
+    textSize(50);
+    text("Click to begin",width/2,600);
     textSize(20);
     text("Press W to move forward",width/4,200);
     text("Press S to move backward + slow down",width/4,230);
@@ -51,12 +53,14 @@ public void draw()
     text("Press D to move right",width/4,290);
     text("Mouse Click to fire",width/4,320);
     text("Press N to spam bullets",width/4,350);
+    text("Press Space to place mines",width/4,380);
     text("Press Q to rotate left",3*width/4,200);
     text("Press E to rotate right",3*width/4,230);
     text("Press L to accelerate",3*width/4,260);
     text("Press K to accelerate backwards",3*width/4,290);
     text("Press P to teleport",3*width/4,320);
     text("Press M to level instantly",3*width/4,350);
+    text("Press O for a Final Attack",3*width/4,380);
     //text("Press esc to leave",width/2,450);
     noStroke();
     noFill();
@@ -78,8 +82,8 @@ public void draw()
                 bulletTotal++;
               }
       }
-      if(risingSun==true&&mousePressed){
-              for(int i=1;i<25;i++){bill.add(new Bullet(bob,10,"gray",(int)(bob.getPointDirection()+(15*i))));}
+      if(risingSun==true && mousePressed){
+              for(int i=0;i<24;i++){bill.add(new Bullet(bob,10,"gray",(int)(bob.getPointDirection()+(15*i))));}
               bulletTotal+=24;
       }
       for(int i = 0; i<castor.length;i++)
@@ -108,9 +112,9 @@ public void draw()
                 {
                           if((i+1)%5==0){enemyBullet.add(new Bullet(enemy.get(i),6,"red"));}
                           enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
-                          //enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
-                            if(cheats==true){
+                            if(cheats==true || risingSun==true){
                                 enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
+                                //enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
                                 //enemyBullet.add(new Bullet(enemy.get(i),6,"red",(int)(Math.random()*360)));
                               }
                           
@@ -129,7 +133,11 @@ public void draw()
                   boolean bulletDead=false;
                   if(dist(enemy.get(i).getX(), enemy.get(i).getY(),bill.get(z).getX(),bill.get(z).getY())<=20)
                       {
-                        for(int k=0;k<31;k++){enemyBullet.add(new Bullet(enemy.get(i),6,"blood",(int)(Math.random()*360)));}
+                        for(int k=0;k<(5+(2*level));k++){enemyBullet.add(new Bullet(enemy.get(i),6,"blood",(int)(Math.random()*360)));}
+                        if(cheats==true || risingSun==true)
+                        {
+                          for(int k=0;k<31;k++){enemyBullet.add(new Bullet(enemy.get(i),6,"blood",(int)(Math.random()*360)));}
+                        }
                         bob.setHP(bob.getHP()+(20*level));
                         shipscore+=500;
                         dead=true;
@@ -170,6 +178,7 @@ public void draw()
       if(phil.size()==0)
           {
               level++;
+              risingMoon++;
               bob.setHP(bob.getHP()+(100*level));
               for(int w = 0;w<(15+(5*level));w++)
               {
@@ -203,8 +212,9 @@ public void draw()
         }
       if(level>300){endScreen=true;}  
       fill(255);
-      text(bulletTotal + " bullets used",90,80);
-      text(mineTotal + " mines placed",93,110);
+      text(bulletTotal + " bullets used (Left Click)",180,80);
+      text(mineTotal + " mines placed (Spacebar)",183,110);
+      text("(O key) Final Attacks remaining: "+risingMoon,5*width/6,80);
       text("HP",30,50);
       text("Level "+level,width-60,30);
       fill(255,0,0);
@@ -212,6 +222,8 @@ public void draw()
       fill(255);
       text((int)(bob.getHP()),width/6,50);
       if(cheats==true){text("RapidFire On",width/2,150);}
+      fill(255,255,0);
+      if(risingSun==true){text("Sunfire On",width/2,200);}
       }
     }
     else
@@ -237,8 +249,8 @@ public void draw()
        {
         fill(255,0,0);
        }
-      if(cheats==false){text("Score: "+score,width/2,3*height/4);}
-      if(cheats==true){text("Score: Null",width/2,3*height/4);}
+      if(cheats==false && risingSun==false){text("Score: "+score,width/2,3*height/4);}
+      if(cheats==true || risingSun==true){text("Score: Null",width/2,3*height/4);}
     }
   }
 
@@ -255,6 +267,7 @@ public void mouseClicked(){
   if(SplashScreen==false && endScreen==true){
     bob.setHP(100);
     bulletTotal=0;
+    risingMoon=5;
     bob.accelerate(0);
     bob.setDirectionX(0);
     bob.setDirectionY(0);
@@ -302,6 +315,13 @@ public void keyPressed(){
     castor[i].accelerate(1.2);
     }
     */
+  }
+  if(key == 'o'){
+    if(risingMoon>0)
+      {
+          for(int i=0;i<72;i++){bill.add(new Bullet(bob,10,"gray",(int)(bob.getPointDirection()+(5*i))));}
+          risingMoon--;
+      }
   }
   if(key == 'k'){
      bob.accelerate(-0.3);
